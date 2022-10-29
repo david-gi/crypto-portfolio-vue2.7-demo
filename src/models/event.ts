@@ -23,21 +23,21 @@ export const Convert = (json: any): Event[] => {
       return <Event>{
         addr,
         records: (<any[]>value.events)
-          .map((jEvent: any) => {
+          .map((record: any) => {
             return <EventRecord>{
-              type: <EventType>jEvent.event_type,
+              type: <EventType>record.event_type,
               record: <BalanceRecord>{
                 asset: <FinancialRecord>{
-                  tickerSymbol: jEvent.asset,
-                  value: jEvent.value.amount
+                  tickerSymbol: record.asset,
+                  value: record.value.amount
                 },
                 conversion: <FinancialRecord>{
                   tickerSymbol: "USD",
                   charSymbol: <CharSymbol>{ symbol: "$", isLeftSide: true },
-                  value: jEvent.value.usd_value
+                  value: record.value.usd_value
                 }
               },
-              datetime: new Date(jEvent.timestamp)
+              datetime: new Date(record.timestamp * 1000)
             };
           })
       };

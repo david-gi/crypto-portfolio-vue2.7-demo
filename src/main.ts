@@ -11,6 +11,6 @@ const pinia = createPinia();
 
 new Vue({
   vuetify,
-  pinia,
   render: (h) => h(App),
+  pinia,
 }).$mount("#app");

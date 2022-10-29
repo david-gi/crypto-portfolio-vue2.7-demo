@@ -1,26 +1,29 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useEventStore } from "@/store/event";
+import { useBalanceStore } from "@/store/balance";
 import { AddressGroup } from "@/models/common";
-import { useEventStore } from './event'
-import { useBalanceStore } from './balance'
-
-const event = useEventStore();
-const balance = useBalanceStore();
 
 export const useMainStore = defineStore("main", () => {
   const currentAddress = ref<string>();
+  const eventStore = ref(useEventStore());
+  const balanceStore = ref(useBalanceStore());
+
+  function availableAddresses() {
+    const eventAddrs = eventStore.value.events?.map(e => e.addr);
+    const balanceAddrs = balanceStore.value.balances?.map(e => e.addr);
+    const addrs = (eventAddrs != undefined ? eventAddrs : []).concat(balanceAddrs != undefined ? balanceAddrs : []);
+    return Array.from(new Set(addrs).values());
+  }
 
   function setAddress(addr: string | undefined) {
     currentAddress.value = addr;
-    event.fetchEvents();
-    balance.fetchBalances();
+    const addressFilter = addr == undefined
+      ? (x: AddressGroup) => true
+      : (x: AddressGroup) => x.addr == addr
+    eventStore.value.setFilter(addressFilter);
+    balanceStore.value.setFilter(addressFilter);
   }
 
-  function addressFilter(x: AddressGroup) {
-    currentAddress.value != undefined
-      ? x.addr == currentAddress.value
-      : true
-  }
-
-  return { currentAddress, setAddress, addressFilter };
+  return { currentAddress, availableAddresses, eventStore, balanceStore, setAddress };
 });
