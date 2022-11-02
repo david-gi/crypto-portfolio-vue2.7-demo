@@ -2,25 +2,15 @@
   <v-simple-table>
     <template v-slot:default>
       <tbody>
-        <tr v-for="balance in balanceStore.collapsedBalances" :key="balance.asset.value">
+        <tr v-for="balance in rowData" :key="balance.asset.tickerSymbol">
           <td class="text-no-wrap">
-            {{ balance.asset.value }}
-            <small><strong>{{ balance.asset.tickerSymbol }}</strong></small>
+            <financial-value :value="balance.asset" />
           </td>
           <td>
-            <div v-if="balance.conversion.charSymbol?.isLeftSide" class="text-no-wrap">
-              {{ balance.conversion.charSymbol?.symbol }}
-              {{ FormatCurrency(balance.conversion.value, 2) }}
-              <small><strong>{{ balance.conversion.tickerSymbol }}</strong></small>
-            </div>
-            <div v-else class="text-no-wrap">
-              {{ FormatCurrency(balance.conversion.value, 2) }}
-              {{ balance.conversion.charSymbol?.symbol }}
-              <small><strong>{{ balance.conversion.tickerSymbol }}</strong></small>
-            </div>
+            <financial-value :value="balance.conversion" />
           </td>
           <td>
-            <strong>{{ ToFixed((balance.conversion.value / balanceStore.sumTotal) * 100, 1) }}%</strong>
+            <strong>{{ ToFixed((balance.conversion.value / sumTotal) * 100, 1) }}%</strong>
           </td>
         </tr>
       </tbody>
@@ -29,8 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import { useMainStore } from "@/store/main";
-import { FormatCurrency, ToFixed } from "@/helpers/common"
+import { ToFixed, FormatCurrency } from "@/helpers/common"
+import { BalanceRecord } from "@/models/balance";
+import FinancialValue from "@/components/Values/FinancialValue.vue"
 
-const { balanceStore } = useMainStore();
+defineProps<{ rowData: BalanceRecord[], sumTotal: number }>();
 </script>

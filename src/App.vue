@@ -8,13 +8,17 @@
 
 <script setup lang="ts">
 import { onBeforeMount } from "vue";
-import { useMainStore } from "@/store/main";
+import { useBalanceStore } from "@/store/balance";
+import { useEventStore } from "@/store/event";
 import MainLayout from '@/components/MainLayout.vue';
 
-const mainStore = useMainStore();
+const balanceStore = useBalanceStore();
+const eventStore = useEventStore();
+
+[].map(x => x + 1)
 
 onBeforeMount(async () => {
-  mainStore.eventStore.fetchEvents();
-  mainStore.balanceStore.fetchBalances();
+  balanceStore.fetchBalances();
+  eventStore.fetchEvents();
 });
 </script>

@@ -1,30 +1,28 @@
 import { fetch } from "./axios-base";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { ref, computed } from "vue";
-import { Event, Convert } from "@/models/event";
-import { AddressGroup } from "@/models/common";
+import { EventRecord, JsonToEvents } from "@/models/event";
+import { useBalanceStore } from "./balance";
 
-type baseType = Event;
+type baseType = EventRecord;
 
 export const useEventStore = defineStore("events", () => {
-  const events = ref<Array<baseType>>();
-  const filter = ref<(x: AddressGroup) => boolean>(x => true);
+  const _events = ref<Array<baseType>>([]);
 
-  function setFilter(addressFilter: (x: AddressGroup) => boolean) {
-    filter.value = addressFilter;
-  }
-
-  const filteredEvents = computed((): any => {
-    return events?.value?.filter(filter.value);
+  const events = computed((): baseType[] => {
+    const balanceStore = useBalanceStore();
+    const { currentAddress } = storeToRefs(balanceStore);
+    return _events.value
+      .filter((e: baseType) => currentAddress?.value != undefined ? e.addr == currentAddress.value : true);
   });
 
   function fetchEvents() {
-    const setter = (x: baseType[]) => events.value = x.filter(filter.value);
-    fetch<baseType[]>("/events", setter, Convert)
+    const setter = (x: baseType[]) => _events.value = x;
+    fetch<baseType[]>("/events", setter, JsonToEvents)
       .catch((error) => {
         console.log(error);
       });
   }
 
-  return { events, filteredEvents, setFilter, fetchEvents };
+  return { _events, events, fetchEvents };
 });

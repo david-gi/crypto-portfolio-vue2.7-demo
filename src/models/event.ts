@@ -1,45 +1,41 @@
 import { BalanceRecord } from "./balance"
-import { CharSymbol, FinancialRecord } from "./common"
+import { CharSymbol, FinancialValue } from "./common"
 
 export enum EventType {
   Withdrawal = "Withdrawal",
   Deposit = "Deposit",
 }
 
+
 export type EventRecord = {
+  addr: string;
   type: EventType;
   record: BalanceRecord;
   datetime: Date;
 }
 
-export type Event = {
-  addr: string;
-  records: Array<EventRecord>;
-}
-
-export const Convert = (json: any): Event[] => {
+export const JsonToEvents = (json: object): EventRecord[] => {
+  if (json == undefined) return [];
   return (Object.entries(json) as [string, any])
     .map(([addr, value]) => {
-      return <Event>{
-        addr,
-        records: (<any[]>value.events)
-          .map((record: any) => {
-            return <EventRecord>{
-              type: <EventType>record.event_type,
-              record: <BalanceRecord>{
-                asset: <FinancialRecord>{
-                  tickerSymbol: record.asset,
-                  value: record.value.amount
-                },
-                conversion: <FinancialRecord>{
-                  tickerSymbol: "USD",
-                  charSymbol: <CharSymbol>{ symbol: "$", isLeftSide: true },
-                  value: record.value.usd_value
-                }
-              },
-              datetime: new Date(record.timestamp * 1000)
-            };
-          })
-      };
-    });
+      return value.events.map((eventObj: any) => {
+        return <EventRecord>{
+          addr,
+          type: <EventType>eventObj.event_type,
+          record: <BalanceRecord>{
+            asset: <FinancialValue>{
+              tickerSymbol: eventObj.asset,
+              value: Number.parseFloat(eventObj.value.amount)
+            },
+            conversion: <FinancialValue>{
+              tickerSymbol: "USD",
+              charSymbol: <CharSymbol>{ symbol: "$", isLeftSide: true },
+              value: Number.parseFloat(eventObj.value.usd_value)
+            }
+          },
+          datetime: new Date(eventObj.timestamp * 1000)
+        };
+      })
+    })
+    .flat(1);
 }

@@ -5,12 +5,13 @@
         <v-col>
           <h2 class="h2 text-no-wrap">
             <small>Total:</small>
-            ${{ FormatCurrency(mainStore.balanceStore.sumTotal, 2) }}
+            ${{ FormatCurrency(sumTotal, 2) }}
           </h2>
         </v-col>
         <v-col>
           <div class="float-right">
-            <addr-selector />
+            <v-select v-model="currentAddress" :items="availableAddresses" label=" Filter by Address" dark dense>
+            </v-select>
           </div>
         </v-col>
       </v-row>
@@ -29,10 +30,10 @@
 
     <v-tabs-items v-model="currentTab">
       <v-tab-item value="tab-balances">
-        <balances-table />
+        <balances-table :rowData="balances" :sumTotal="sumTotal" />
       </v-tab-item>
       <v-tab-item value="tab-events">
-        <events-table />
+        <events-table :rowData="events" />
       </v-tab-item>
     </v-tabs-items>
     <v-container class="blue darken-3" fluid>
@@ -44,12 +45,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import AddrSelector from "@/components/AddrSelector.vue";
 import BalancesTable from "@/components/Tables/BalancesTable.vue";
 import EventsTable from "@/components/Tables/EventsTable.vue";
 import { FormatCurrency } from "@/helpers/common"
-import { useMainStore } from "@/store/main";
+import { useBalanceStore } from "@/store/balance";
+import { useEventStore } from "@/store/event";
+import { storeToRefs } from "pinia";
 
-const mainStore = useMainStore();
+const balanceStore = useBalanceStore();
+const { currentAddress, availableAddresses, sumTotal, balances } = storeToRefs(balanceStore);
+const eventStore = useEventStore();
+const { events } = storeToRefs(eventStore);
+
 const currentTab = ref("tab-balances");
 </script>

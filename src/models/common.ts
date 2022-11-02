@@ -3,13 +3,8 @@ export type CharSymbol = {
   isLeftSide: boolean;
 };
 
-export type FinancialRecord = {
+export type FinancialValue = {
   tickerSymbol: string;
   charSymbol?: CharSymbol;
   value: number;
-};
-
-export interface AddressGroup {
-  addr: string;
-  records: Array<any>;
 };

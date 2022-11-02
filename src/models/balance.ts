@@ -1,35 +1,30 @@
-import { CharSymbol, FinancialRecord } from "./common";
+import { CharSymbol, FinancialValue } from "./common";
 
 export type BalanceRecord = {
-  asset: FinancialRecord;
-  conversion: FinancialRecord;
-};
-
-export type Balance = {
   addr: string;
-  records: Array<BalanceRecord>;
+  asset: FinancialValue;
+  conversion: FinancialValue;
 };
 
-export const Convert = (json: any): Balance[] => {
+export const JsonToBalances = (json: object): BalanceRecord[] => {
+  if (json == undefined) return [];
   return (Object.entries(json) as [string, any])
-    .map(([addr, value1]) => {
-      return <Balance>{
-        addr,
-        records:
-          (Object.entries(value1) as [string, any])
-            .map(([asset, value2]) => {
-              return <BalanceRecord>{
-                asset: <FinancialRecord>{
-                  tickerSymbol: asset,
-                  value: value2.amount
-                },
-                conversion: <FinancialRecord>{
-                  tickerSymbol: "USD",
-                  charSymbol: <CharSymbol>{ symbol: "$", isLeftSide: true },
-                  value: value2.usd_value
-                }
-              };
-            })
-      };
-    });
+    .map(([addr, assets]) => {
+      return (Object.entries(assets) as [string, any])
+        .map(([asset, assetObj]) => {
+          return <BalanceRecord>{
+            addr,
+            asset: <FinancialValue>{
+              tickerSymbol: asset,
+              value: Number.parseFloat(assetObj.amount)
+            },
+            conversion: <FinancialValue>{
+              tickerSymbol: "USD",
+              charSymbol: <CharSymbol>{ symbol: "$", isLeftSide: true },
+              value: Number.parseFloat(assetObj.usd_value)
+            }
+          };
+        })
+    })
+    .flat(1);
 };

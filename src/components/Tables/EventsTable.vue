@@ -1,32 +1,22 @@
 <template>
   <v-simple-table dense>
     <template v-slot:default>
-      <tbody v-for="event in eventStore.filteredEvents" :key="event.addr">
-        <tr v-for="rec in event.records" :key="event.addr + rec.datetime">
+      <tbody>
+        <tr v-for="value in rowData" :key="value.addr + value.datetime">
           <td>
-            <small>{{ event.addr }}</small>
+            <small>{{ value.addr }}</small>
           </td>
           <td>
-            <strong>{{ rec.type }}</strong>
+            <strong>{{ value.type }}</strong>
           </td>
           <td class="text-no-wrap">
-            {{ rec.record.asset.value }}
-            <small><strong>{{ rec.record.asset.tickerSymbol }}</strong></small>
+            <financial-value :value="value.record.asset" />
+          </td>
+          <td class="text-no-wrap">
+            <financial-value :value="value.record.conversion" />
           </td>
           <td>
-            <div v-if="rec.record.conversion.charSymbol?.isLeftSide" class="text-no-wrap">
-              {{ rec.record.conversion.charSymbol?.symbol }}
-              {{ FormatCurrency(rec.record.conversion.value, 2) }}
-              <small><strong>{{ rec.record.conversion.tickerSymbol }}</strong></small>
-            </div>
-            <div v-else class="text-no-wrap">
-              {{ FormatCurrency(rec.record.conversion.value, 2) }}
-              {{ rec.record.conversion.charSymbol?.symbol }}
-              <small><strong>{{ rec.record.conversion.tickerSymbol }}</strong></small>
-            </div>
-          </td>
-          <td>
-            {{ rec.datetime.toLocaleString() }}
+            {{ value.datetime.toLocaleString() }}
           </td>
         </tr>
       </tbody>
@@ -35,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-import { useMainStore } from "@/store/main";
-import { FormatCurrency } from "@/helpers/common"
+import { EventRecord } from "@/models/event";
+import FinancialValue from "@/components/Values/FinancialValue.vue"
 
-const { eventStore } = useMainStore();
+defineProps<{ rowData: EventRecord[] }>();
 </script>
