@@ -1,24 +1,32 @@
 <template>
-  <v-card>
-    <v-container class="blue darken-3 white--text" fluid>
-      <v-row class="pt-2">
-        <v-col>
-          <h2 class="h2 text-no-wrap">
-            <small>Total:</small>
-            ${{ FormatCurrency(sumTotal, 2) }}
-          </h2>
-        </v-col>
-        <v-col>
-          <div class="float-right">
-            <v-select v-model="currentAddress" :items="availableAddresses" label=" Filter by Address" dark dense>
-            </v-select>
-          </div>
-        </v-col>
-      </v-row>
+  <v-card width="100vw" class="rounded indigo darken-3 pa-1" elevation="20">
+    <v-container fluid class="white--text pa-0 rounded" elevation="8">
+      <v-parallax style="height: fit-content;" class="pa-3 rounded"
+        src="https://i.pinimg.com/originals/7a/81/24/7a81240359e212d40a665222ff3d13aa.jpg">
+
+        <v-row class="pl-2 pt-2" elevation="6">
+          <h1>Crypto Portfolio</h1>
+        </v-row>
+
+        <v-row elevation="6">
+          <v-col>
+            <h2 class="h2 text-no-wrap">
+              <small>Total:</small>
+              ${{ FormatCurrency(sumTotal, 2) }}
+            </h2>
+          </v-col>
+          <v-col>
+            <div class="float-right">
+              <v-select v-model="currentAddress" :items="availableAddresses" label=" Filter by Address" dark dense>
+              </v-select>
+            </div>
+          </v-col>
+        </v-row>
+      </v-parallax>
     </v-container>
 
-    <v-toolbar color="blue darken-2" dark flat dense>
-      <v-tabs slider-color="orange">
+    <v-toolbar color="indigo darken-2" dark flat dense>
+      <v-tabs slider-color="orange accent-4">
         <v-tab @click="currentTab = 'tab-balances'">
           Balances
         </v-tab>
@@ -28,7 +36,7 @@
       </v-tabs>
     </v-toolbar>
 
-    <v-tabs-items v-model="currentTab">
+    <v-tabs-items v-model="currentTab" class="pa-4">
       <v-tab-item value="tab-balances">
         <balances-table :rowData="balances" :sumTotal="sumTotal" />
       </v-tab-item>
@@ -36,10 +44,6 @@
         <events-table :rowData="events" />
       </v-tab-item>
     </v-tabs-items>
-    <v-container class="blue darken-3" fluid>
-      <br />
-      <br />
-    </v-container>
   </v-card>
 </template>
 

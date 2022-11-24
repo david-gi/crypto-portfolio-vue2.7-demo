@@ -1,6 +1,8 @@
-# vue2.7-ts-vuetify-demo
+#@ vue2.7-ts-vuetify-demo
 
 ### A Vue 2.7.X TypeScript project using vuetify, pinia, axios and json-server. Vue 3 migration ready.
+
+![preview img](https://github.com/david-gi/vue2.7-ts-vuetify-demo/blob/master/preview.png)
 
 ## Project setup
 ```
